@@ -34,9 +34,9 @@ function updatePokemonList() {
 /**render */
 function renderPokemonListItem(index) {
     if (currentList[index]) {
-        document.getElementById('pokedex-list-render-container').insertAdjacentHTML('beforeend', `<div onclick="openInfo(${currentList[index].id.toString().padStart(3, '0')})" class="pokemon-render-result-container container center column">
+        document.getElementById('pokedex-list-render-container').insertAdjacentHTML('beforeend', `<div onclick="openInfo(${currentList[index].id})" class="pokemon-render-result-container container center column">
                                                                                                     <img class="search-pokemon-image" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentList[index].id}.png">
-                                                                                                    <span class="bold font-size-12"># ${currentList[index].id.toString().padStart(3, '0')}</span>
+                                                                                                    <span class="bold font-size-12"># ${currentList[index].id}</span>
                                                                                                     <h3>${dressUpPayloadValue(currentList[index].name)}</h3>
                                                                                                     ${getTypeContainers(currentList[index].types)}
                                                                                                 </div>`);
