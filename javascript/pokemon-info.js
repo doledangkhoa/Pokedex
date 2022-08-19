@@ -61,7 +61,7 @@ function updateCurrentPokemonImage(id) {
 /**setup pokemon id, name, types, height, weight and description */
 function setupPokemonAbout(pokemon, id, species) {
     document.getElementById('current-pokemon-info').classList.remove('hide');
-    document.getElementById('current-pokemon-id').innerHTML = '# ' + pokemon.id.toString().padStart(3, '0');
+    document.getElementById('current-pokemon-id').innerHTML = '# ' + pokemon.id;
     document.getElementById('current-pokemon-name').innerHTML = dressUpPayloadValue(pokemon.name);
     document.getElementById('current-pokemon-types').innerHTML = getTypeContainers(pokemons[id - 1].types);
     document.getElementById('current-pokemon-height').innerHTML = pokemon.height / 10 + 'm';
