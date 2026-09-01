@@ -11,147 +11,247 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
 </head>
-<body onload="getAllNames()" class="row">
-    <!--Setup Loading Div-->
+<body onload="initializeApp()" class="row">
     <div id="loading-div">
         <img src="src/pokeball-icon.png" class="loading-ball">
     </div>
 
-    <!--Search Bar and render search pokemon-->
     <div id="pokedex-list" class="column">
-
-        <!--Search Bar-->
         <div id="search-bar-container" class="row container margin-40">
-            <input id="search-input" onkeydown="search()" placeholder="Search your Pokemon">
-            <div id="start-search-button" class="center">
+            <input id="search-input" oninput="applyFilters()" placeholder="Search your Pokemon">
+            <button id="start-search-button" class="center" onclick="applyFilters()" aria-label="Search Pokemon">
                 <i class="fas fa-search"></i>
-            </div>
+            </button>
         </div>
+
+        <div id="filter-bar-container" class="container filter-bar">
+            <select id="type-filter" onchange="applyFilters()">
+                <option value="all">All Types</option>
+                <option value="normal">Normal</option>
+                <option value="fighting">Fighting</option>
+                <option value="flying">Flying</option>
+                <option value="poison">Poison</option>
+                <option value="ground">Ground</option>
+                <option value="rock">Rock</option>
+                <option value="bug">Bug</option>
+                <option value="ghost">Ghost</option>
+                <option value="steel">Steel</option>
+                <option value="fire">Fire</option>
+                <option value="water">Water</option>
+                <option value="grass">Grass</option>
+                <option value="electric">Electric</option>
+                <option value="psychic">Psychic</option>
+                <option value="ice">Ice</option>
+                <option value="dragon">Dragon</option>
+                <option value="dark">Dark</option>
+                <option value="fairy">Fairy</option>
+            </select>
+
+            <select id="generation-filter" onchange="applyFilters()">
+                <option value="all">All Generations</option>
+                <option value="1">Gen 1</option>
+                <option value="2">Gen 2</option>
+                <option value="3">Gen 3</option>
+                <option value="4">Gen 4</option>
+                <option value="5">Gen 5</option>
+                <option value="6">Gen 6</option>
+                <option value="7">Gen 7</option>
+                <option value="8">Gen 8</option>
+                <option value="9">Gen 9</option>
+                <option value="forms">Special Forms</option>
+            </select>
+
+            <select id="sort-filter" onchange="applyFilters()">
+                <option value="id-asc">ID ↑</option>
+                <option value="id-desc">ID ↓</option>
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+                <option value="favorites">Favorites</option>
+            </select>
+        </div>
+
+        <div id="phase2-toolbar" class="container phase2-toolbar">
+            <button onclick="toggleDarkMode()" id="dark-mode-toggle">🌙 Dark Mode</button>
+            <button onclick="toggleLanguage()" id="language-toggle">🇯🇵 日本語</button>
+            <button onclick="openTeamPanel()">Team Builder</button>
+            <button onclick="openProgressPanel()">Progress</button>
+            <button onclick="openBattlePanel()">Battle Lite</button>
+            <button onclick="openRandomPokemon()">🎲 Random</button>
+        </div>
+
+        <div id="progress-summary" class="progress-summary"></div>
+        <div id="result-counter" class="result-counter"></div>
 
         <div id="pokedex-list-render-container">
-            <!--Render here-->
+            <!-- Render here -->
         </div>
     </div>
-    
-    <!--responsive current pokemon-->
+
     <div id="current-pokemon-responsive-background" class="hide"></div>
     <div id="current-pokemon-responsive-close" class="hide" onclick="closePokemonInfo()"><img src="src/close-icon.png"></div>
 
-    <!--current selected pokemon-->
     <div id="current-pokemon-container" class="container column center">
-    
-
         <img id="current-pokemon-image" src="src/no-pokemon-selected-image.png">
 
-        <!--Info-->
         <div id="current-pokemon-info" class="hide">
-            <!--Id-->
-            <span id="current-pokemon-id" class="font-size-12 bold">#213</span>
-            
-            <!--name-->
-            <h2 id="current-pokemon-name">Pikachu</h2>
+            <button id="favorite-button" onclick="toggleCurrentPokemonFavorite()" title="Add to favorites">♡</button>
 
-            <!--types-->
+            <span id="current-pokemon-id" class="font-size-12 bold">#213</span>
+            <h2 id="current-pokemon-name">Pikachu</h2>
             <div id="current-pokemon-types" class="row center"></div>
 
-            <!--description-->
-            <h4>Pokedex Entry</h4>
-            <span id="current-pokemon-description"></span>
-
-            <!--height and weight-->
-            <div class="row center">
-                <div class="width-100 column center margin-5">
-                    <h4>Height</h4>
-                    <div  id="current-pokemon-height" class="pokemon-info-variable-container"></div>
-                </div>
-                <div class="width-100 column center margin-5">
-                    <h4>Weight</h4>
-                    <div id="current-pokemon-weight" class="pokemon-info-variable-container"></div>
-                </div>
+            <div class="detail-action-row">
+                <button class="mini-action-button" onclick="openPreviousPokemon()">◀ Prev</button>
+                <button class="mini-action-button" onclick="openNextPokemon()">Next ▶</button>
+                <button class="mini-action-button" onclick="addCurrentPokemonToTeam()">+ Team</button>
+                <button class="mini-action-button" onclick="addCurrentPokemonToCompare('left')">Compare A</button>
+                <button class="mini-action-button" onclick="addCurrentPokemonToCompare('right')">Compare B</button>
             </div>
 
-            <!--abilities-->
-            <div class="column">
-                <h4>Abilities</h4>
-                <div class="row">
-                    <div id="current-pokemon-abilitiy-0" class="pokemon-info-variable-container"></div>
-                    <div id="current-pokemon-abilitiy-1" class="pokemon-info-variable-container"></div>
-                </div>
+            <div id="current-pokemon-tabs" class="info-tabs">
+                <button class="info-tab active" onclick="showPokemonTab('about')">About</button>
+                <button class="info-tab" onclick="showPokemonTab('stats')">Stats</button>
+                <button class="info-tab" onclick="showPokemonTab('evolution')">Evolution</button>
+                <button class="info-tab" onclick="showPokemonTab('moves')">Moves</button>
+                <button class="info-tab" onclick="showPokemonTab('build')">Build</button>
             </div>
 
-            <!--stats-->
-            <h4>Stats</h4>
-            <div class="row center">
-                <div class="current-pokemon-stats-container column">
-                    <div class="current-pokemon-stats-name" style="background: #DF2140">
-                        HP
-                    </div>
-                    <h5 id="current-pokemon-stats-hp"></h5>
-                </div>
-                <div class="current-pokemon-stats-container column">
-                    <div class="current-pokemon-stats-name" style="background: #FF994D">
-                        ATK
-                    </div>
-                    <h5 id="current-pokemon-stats-atk"></h5>
-                </div>
-                <div class="current-pokemon-stats-container column">
-                    <div class="current-pokemon-stats-name" style="background: #eecd3d">
-                        DEF
-                    </div>
-                    <h5 id="current-pokemon-stats-def"></h5>
-                </div>
-                <div class="current-pokemon-stats-container column">
-                    <div class="current-pokemon-stats-name" style="background: #85DDFF">
-                        SpA
-                    </div>
-                    <h5 id="current-pokemon-stats-spa"></h5>
-                </div>
-                <div class="current-pokemon-stats-container column">
-                    <div class="current-pokemon-stats-name" style="background: #96da83">
-                        SpD
-                    </div>
-                    <h5 id="current-pokemon-stats-spd"></h5>
-                </div>
-                <div class="current-pokemon-stats-container column">
-                    <div class="current-pokemon-stats-name" style="background: #FB94A8">
-                        SPD
-                    </div>
-                    <h5 id="current-pokemon-stats-speed"></h5>
-                </div>
-                <div class="current-pokemon-stats-container column" style="background: #88AAEA">
-                    <div class="current-pokemon-stats-name" style="background: #7195DC">
-                        TOT
-                    </div>
-                    <h5 id="current-pokemon-stats-total"></h5>
-                </div>
-            </div>
+            <div id="pokemon-tab-about" class="pokemon-tab-content">
+                <h4>Pokedex Entry</h4>
+                <span id="current-pokemon-description"></span>
 
-            <!--Evolution chain-->
-            <div id="current-pokemon-evolution-chain-container">
-                <h4>Evolution</h4>
                 <div class="row center">
-                    <img id="current-pokemon-evolution-0" class="current-pokemon-evolution-image" src="./src/pokeball-icon.png">
-                    <div id="current-pokemon-evolution-level-0" class="current-pokemon-evolution-level-container font-size-12 bold">Lv. 16</div>
-                    <img id="current-pokemon-evolution-1" class="current-pokemon-evolution-image" src="./src/pokeball-icon.png">
-                    <div id="current-pokemon-evolution-level-1"class="current-pokemon-evolution-level-container font-size-12 bold">Lv. 36</div>
-                    <img id="current-pokemon-evolution-2" class="current-pokemon-evolution-image" src="./src/pokeball-icon.png">
+                    <div class="width-100 column center margin-5">
+                        <h4>Height</h4>
+                        <div id="current-pokemon-height" class="pokemon-info-variable-container"></div>
+                    </div>
+                    <div class="width-100 column center margin-5">
+                        <h4>Weight</h4>
+                        <div id="current-pokemon-weight" class="pokemon-info-variable-container"></div>
+                    </div>
                 </div>
+
+                <div class="column">
+                    <h4>Abilities</h4>
+                    <div class="row">
+                        <div id="current-pokemon-abilitiy-0" class="pokemon-info-variable-container"></div>
+                        <div id="current-pokemon-abilitiy-1" class="pokemon-info-variable-container"></div>
+                    </div>
+                </div>
+
+                <h4>Details</h4>
+                <div id="current-pokemon-extra-details" class="detail-grid"></div>
+
+                <h4>Weakness</h4>
+                <div id="current-pokemon-weaknesses" class="row center type-wrap"></div>
+            </div>
+
+            <div id="pokemon-tab-stats" class="pokemon-tab-content hide">
+                <h4>Stats</h4>
+                <div class="row center stats-wrap">
+                    <div class="current-pokemon-stats-container column"><div class="current-pokemon-stats-name" style="background: #DF2140">HP</div><h5 id="current-pokemon-stats-hp"></h5></div>
+                    <div class="current-pokemon-stats-container column"><div class="current-pokemon-stats-name" style="background: #FF994D">ATK</div><h5 id="current-pokemon-stats-atk"></h5></div>
+                    <div class="current-pokemon-stats-container column"><div class="current-pokemon-stats-name" style="background: #eecd3d">DEF</div><h5 id="current-pokemon-stats-def"></h5></div>
+                    <div class="current-pokemon-stats-container column"><div class="current-pokemon-stats-name" style="background: #85DDFF">SpA</div><h5 id="current-pokemon-stats-spa"></h5></div>
+                    <div class="current-pokemon-stats-container column"><div class="current-pokemon-stats-name" style="background: #96da83">SpD</div><h5 id="current-pokemon-stats-spd"></h5></div>
+                    <div class="current-pokemon-stats-container column"><div class="current-pokemon-stats-name" style="background: #FB94A8">SPD</div><h5 id="current-pokemon-stats-speed"></h5></div>
+                    <div class="current-pokemon-stats-container column" style="background: #88AAEA"><div class="current-pokemon-stats-name" style="background: #7195DC">TOT</div><h5 id="current-pokemon-stats-total"></h5></div>
+                </div>
+            </div>
+
+            <div id="pokemon-tab-evolution" class="pokemon-tab-content hide">
+                <div id="current-pokemon-evolution-chain-container">
+                    <h4>Evolution</h4>
+                    <div class="row center">
+                        <img id="current-pokemon-evolution-0" class="current-pokemon-evolution-image" src="./src/pokeball-icon.png">
+                        <div id="current-pokemon-evolution-level-0" class="current-pokemon-evolution-level-container font-size-12 bold">Lv. 16</div>
+                        <img id="current-pokemon-evolution-1" class="current-pokemon-evolution-image" src="./src/pokeball-icon.png">
+                        <div id="current-pokemon-evolution-level-1" class="current-pokemon-evolution-level-container font-size-12 bold">Lv. 36</div>
+                        <img id="current-pokemon-evolution-2" class="current-pokemon-evolution-image" src="./src/pokeball-icon.png">
+                    </div>
+                </div>
+            </div>
+
+            <div id="pokemon-tab-moves" class="pokemon-tab-content hide">
+                <h4>Moves</h4>
+                <div id="current-pokemon-move-summary" class="move-summary"></div>
+                <div id="current-pokemon-moves" class="moves-list"></div>
+                
+            </div>
+
+            <div id="pokemon-tab-build" class="pokemon-tab-content hide">
+                <h4>Competitive Build</h4>
+                <div id="current-pokemon-build" class="build-box"></div>
             </div>
         </div>
 
-        <!--Empty-->
         <div id="current-pokemon-empty">
             <span class="font-size-18">Select a Pokemon<br>to display here.</span>
         </div>
     </div>
 
-    <!--Back to top button-->
+    <div id="compare-panel" class="compare-panel hide">
+        <div class="compare-header">
+            <h3>Compare Pokemon</h3>
+            <button onclick="closeComparePanel()">×</button>
+        </div>
+        <div id="compare-slots" class="compare-slots">
+            <div id="compare-slot-left" class="compare-slot empty">Select Compare A</div>
+            <div id="compare-slot-right" class="compare-slot empty">Select Compare B</div>
+        </div>
+        <div id="compare-result" class="compare-result"></div>
+    </div>
+
+
+    <div id="team-panel" class="compare-panel team-panel hide">
+        <div class="compare-header">
+            <h3>Team Builder</h3>
+            <button onclick="closeTeamPanel()">×</button>
+        </div>
+        <div id="team-slots" class="team-slots"></div>
+        <div id="team-analysis" class="team-analysis"></div>
+        <div class="panel-actions">
+            <button onclick="clearTeam()">Clear Team</button>
+        </div>
+    </div>
+
+    <div id="progress-panel" class="compare-panel progress-panel hide">
+        <div class="compare-header">
+            <h3>Pokédex Progress</h3>
+            <button onclick="closeProgressPanel()">×</button>
+        </div>
+        <div id="progress-panel-content"></div>
+    </div>
+
+    <div id="battle-panel" class="compare-panel battle-panel hide">
+        <div class="compare-header">
+            <h3>Battle Simulator Lite</h3>
+            <button onclick="closeBattlePanel()">×</button>
+        </div>
+        <div class="battle-picker">
+            <select id="battle-left-select"></select>
+            <span>VS</span>
+            <select id="battle-right-select"></select>
+        </div>
+        <button class="battle-run-button" onclick="runBattleLite()">Predict Battle</button>
+        <div id="battle-result" class="battle-result"></div>
+    </div>
+
+
+    <div id="move-detail-modal" class="move-detail-modal hide" onclick="closeMoveDetailModal()">
+        <div class="move-detail-modal-content" onclick="event.stopPropagation()">
+            <div class="move-detail-modal-header">
+                <h3 id="move-detail-modal-title">Move Detail</h3>
+                <button onclick="closeMoveDetailModal()">×</button>
+            </div>
+            <div id="move-detail-modal-body"></div>
+        </div>
+    </div>
+
     <div id="back-to-top-button" class="hide" onclick="backToTop()">
         <img src="src/arrow-up-icon.png">
     </div>
 
-    <!--Loading selected pokemon-->
-    <img id="current-pokemon-loading" src="src/pokeball-icon.png" class="loading-ball">
-
+    <img id="current-pokemon-loading" src="src/pokeball-icon.png" class="loading-ball hide">
 </body>
 </html>
