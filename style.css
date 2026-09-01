@@ -451,3 +451,617 @@ input {
         margin: 40px 0;
     }
 }
+
+/* New filter bar */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin: 0 10px 20px 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filter-bar select {
+    border: none;
+    outline: none;
+    background: #F6F8FC;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.result-counter {
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    margin: 8px 0 25px 0;
+    opacity: 0.9;
+}
+
+#start-search-button {
+    border: none;
+}
+
+.pokemon-render-result-container {
+    overflow: visible;
+}
+
+.pokemon-render-result-container:hover {
+    transform: translateY(-6px);
+    box-shadow: #d9d9d9 0 18px 20px;
+}
+
+.pokemon-card-favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background: #F6F8FC;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #c7c7c7;
+    z-index: 2;
+}
+
+.favorite-active {
+    color: #FF5350 !important;
+}
+
+#favorite-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    background: #F6F8FC;
+    height: 38px;
+    width: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    color: #c7c7c7;
+}
+
+.info-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 12px 0 5px 0;
+    flex-wrap: wrap;
+}
+
+.info-tab {
+    border: none;
+    border-radius: 20px;
+    background: #F6F8FC;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #8F9396;
+}
+
+.info-tab.active,
+.info-tab:hover {
+    background: #FF5350;
+    color: white;
+}
+
+.pokemon-tab-content {
+    animation: fadeInTab 0.2s ease-in-out;
+}
+
+@keyframes fadeInTab {
+    0% { opacity: 0; transform: translateY(5px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.type-wrap {
+    flex-wrap: wrap;
+}
+
+.stats-wrap {
+    flex-wrap: wrap;
+}
+
+#current-pokemon-weaknesses .row {
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#current-pokemon-loading {
+    z-index: 3;
+}
+
+@media(max-width: 700px) {
+    .filter-bar {
+        flex-direction: column;
+    }
+
+    .filter-bar select {
+        width: 100%;
+    }
+
+    .pokemon-render-result-container {
+        min-width: 40%;
+    }
+}
+
+
+/* Phase 1 additions: compare, moves, better details */
+.detail-action-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0;
+    flex-wrap: wrap;
+}
+
+.mini-action-button,
+.compare-card-button {
+    border: none;
+    background: #F6F8FC;
+    color: #011030;
+    border-radius: 18px;
+    padding: 7px 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s ease-in-out;
+}
+
+.mini-action-button:hover,
+.compare-card-button:hover {
+    background: #FF5350;
+    color: white;
+}
+
+.compare-card-button {
+    position: absolute;
+    top: 46px;
+    right: 8px;
+    font-size: 11px;
+    z-index: 2;
+    padding: 5px 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.detail-item {
+    background: #F6F8FC;
+    border-radius: 14px;
+    padding: 8px;
+    text-align: center;
+}
+
+.detail-label {
+    display: block;
+    font-size: 11px;
+    color: #8F9396;
+    font-weight: 700;
+}
+
+.detail-value {
+    display: block;
+    color: #011030;
+    font-weight: 700;
+    margin-top: 3px;
+    font-size: 13px;
+}
+
+.move-summary {
+    color: #8F9396;
+    font-size: 13px;
+    margin: 6px 0 10px 0;
+}
+
+.moves-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 20px;
+}
+
+.move-row {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 0.7fr 0.7fr;
+    gap: 6px;
+    align-items: center;
+    background: #F6F8FC;
+    border-radius: 14px;
+    padding: 8px;
+    font-size: 12px;
+}
+
+.move-name {
+    font-weight: 800;
+    color: #011030;
+}
+
+.move-meta {
+    color: #8F9396;
+    font-weight: 700;
+}
+
+.compare-panel {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    width: min(560px, calc(100vw - 40px));
+    max-height: 78vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 22px;
+    box-shadow: rgba(0,0,0,0.22) 0 20px 45px;
+    padding: 16px;
+    z-index: 5;
+}
+
+.compare-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.compare-header button {
+    border: none;
+    background: #F6F8FC;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.compare-slots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+}
+
+.compare-slot {
+    background: #F6F8FC;
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+    min-height: 110px;
+}
+
+.compare-slot.empty {
+    color: #8F9396;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+}
+
+.compare-slot img {
+    height: 70px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.compare-result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.compare-result-table th,
+.compare-result-table td {
+    padding: 8px;
+    border-bottom: 1px solid #F0F0F0;
+    text-align: center;
+}
+
+.compare-result-table th {
+    color: #011030;
+}
+
+.compare-win {
+    color: #FF5350;
+    font-weight: 900;
+}
+
+@media(max-width: 700px) {
+    .detail-grid,
+    .compare-slots {
+        grid-template-columns: 1fr;
+    }
+
+    .move-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .compare-panel {
+        left: 10px;
+        bottom: 10px;
+        width: calc(100vw - 52px);
+    }
+}
+
+
+/* Phase 2 additions: team builder, dark mode, progress, battle, quick navigation */
+.phase2-toolbar { display: flex; gap: 10px; margin: 0 10px 14px 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.phase2-toolbar button, .panel-actions button, .battle-run-button { border: none; background: #F6F8FC; color: #011030; border-radius: 18px; padding: 9px 12px; font-weight: 800; cursor: pointer; transition: 0.15s ease-in-out; }
+.phase2-toolbar button:hover, .panel-actions button:hover, .battle-run-button:hover { background: #FF5350; color: white; }
+.progress-summary { color: white; font-weight: 700; text-align: center; opacity: 0.95; margin-bottom: 8px; }
+.team-card-button { position: absolute; top: 78px; right: 8px; font-size: 11px; z-index: 2; padding: 5px 8px; border: none; background: #F6F8FC; color: #011030; border-radius: 18px; font-weight: 700; cursor: pointer; transition: 0.15s ease-in-out; }
+.team-card-button:hover { background: #FF5350; color: white; }
+.team-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+.team-slot { background: #F6F8FC; border-radius: 16px; padding: 10px; text-align: center; min-height: 120px; position: relative; }
+.team-slot.empty { display: flex; justify-content: center; align-items: center; color: #8F9396; font-weight: 800; }
+.team-slot img { height: 64px; object-fit: contain; image-rendering: pixelated; }
+.team-slot h4 { font-size: 13px; }
+.remove-team-button { position: absolute; top: 6px; right: 6px; border: none; background: white; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: 900; }
+.team-analysis-grid, .progress-grid, .battle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.analysis-box, .progress-box, .battle-box { background: #F6F8FC; border-radius: 16px; padding: 12px; text-align: center; }
+.analysis-box h4, .progress-box h4, .battle-box h4 { margin-top: 0; }
+.team-score { font-size: 24px; font-weight: 900; color: #FF5350; }
+.battle-picker { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin: 12px 0; }
+.battle-picker select { border: none; background: #F6F8FC; border-radius: 14px; padding: 10px; min-width: 0; }
+.battle-run-button { width: 100%; margin-bottom: 10px; }
+.battle-winner { color: #FF5350; font-weight: 900; font-size: 20px; }
+body.dark-mode { background-color: #07111f; color: #e8edf8; }
+body.dark-mode .container, body.dark-mode .compare-panel { background: #101d31; box-shadow: rgba(0,0,0,0.35) 0 10px 22px; }
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode .detail-value, body.dark-mode .move-name, body.dark-mode .phase2-toolbar button, body.dark-mode .mini-action-button, body.dark-mode .compare-card-button, body.dark-mode .team-card-button, body.dark-mode .compare-header button, body.dark-mode .panel-actions button, body.dark-mode .battle-run-button { color: #e8edf8; }
+body.dark-mode span, body.dark-mode .move-meta, body.dark-mode .detail-label { color: #aeb8c8; }
+body.dark-mode input, body.dark-mode select, body.dark-mode .filter-bar select, body.dark-mode .pokemon-info-variable-container, body.dark-mode .current-pokemon-stats-container, body.dark-mode .detail-item, body.dark-mode .move-row, body.dark-mode .compare-slot, body.dark-mode .team-slot, body.dark-mode .analysis-box, body.dark-mode .progress-box, body.dark-mode .battle-box, body.dark-mode .phase2-toolbar button, body.dark-mode .mini-action-button, body.dark-mode .compare-card-button, body.dark-mode .team-card-button, body.dark-mode .panel-actions button, body.dark-mode .battle-run-button { background: #182945; color: #e8edf8; }
+body.dark-mode .pokemon-render-result-container { border-color: #101d31; }
+body.dark-mode .pokemon-render-result-container:hover { border-color: #30425f; box-shadow: rgba(0,0,0,0.35) 0 18px 20px; }
+@media(max-width: 700px) { .team-slots, .team-analysis-grid, .progress-grid, .battle-grid, .battle-picker { grid-template-columns: 1fr; } }
+
+
+/* Phase 3 additions: move detail + competitive build */
+.move-row-clickable {
+    cursor: pointer;
+    transition: 0.15s ease-in-out;
+}
+
+.move-row-clickable:hover {
+    transform: translateX(4px);
+    background: #eef2ff;
+}
+
+.move-detail-box {
+    margin-top: 12px;
+    background: #F6F8FC;
+    border-radius: 18px;
+    padding: 12px;
+    text-align: left;
+}
+
+.move-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.move-detail-header h4 {
+    margin: 0;
+    text-align: left;
+}
+
+.move-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.move-effect-text {
+    color: #8F9396;
+    font-size: 13px;
+    line-height: 1.4;
+    background: white;
+    border-radius: 14px;
+    padding: 10px;
+}
+
+.build-box {
+    padding-bottom: 20px;
+}
+
+.build-role-card {
+    background: #F6F8FC;
+    border-radius: 18px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.build-role-card h3 {
+    margin: 5px 0;
+}
+
+.build-move-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.build-move {
+    background: #F6F8FC;
+    border-radius: 16px;
+    padding: 9px;
+    color: #011030;
+    font-weight: 800;
+    text-align: center;
+}
+
+.build-advice {
+    background: #F6F8FC;
+    border-radius: 16px;
+    padding: 12px;
+    color: #8F9396;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Dark mode support for Phase 3 */
+body.dark-mode .move-detail-box,
+body.dark-mode .build-role-card,
+body.dark-mode .build-move,
+body.dark-mode .build-advice {
+    background: #17213f;
+}
+
+body.dark-mode .move-effect-text {
+    background: #101a36;
+}
+
+body.dark-mode .build-move,
+body.dark-mode .build-role-card h3 {
+    color: #F6F8FC;
+}
+
+body.dark-mode .move-row-clickable:hover {
+    background: #1e2a4f;
+}
+
+@media(max-width: 700px) {
+    .move-detail-grid,
+    .build-move-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Phase 3.5 additions: move detail modal + language button */
+.move-detail-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(1, 16, 48, 0.58);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    padding: 18px;
+}
+
+.move-detail-modal-content {
+    width: min(520px, calc(100vw - 36px));
+    max-height: 82vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 22px;
+    box-shadow: rgba(0, 0, 0, 0.32) 0 25px 60px;
+    padding: 18px;
+    animation: fadeInTab 0.18s ease-in-out;
+}
+
+.move-detail-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.move-detail-modal-header h3 {
+    flex: 1;
+    text-align: left;
+}
+
+.move-detail-modal-header button {
+    border: none;
+    background: #F6F8FC;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: 800;
+    color: #011030;
+}
+
+.move-row-clickable {
+    cursor: pointer;
+    transition: 0.15s ease-in-out;
+}
+
+.move-row-clickable:hover {
+    transform: translateY(-2px);
+    background: #EEF2FB;
+}
+
+.move-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.move-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.move-effect-text {
+    background: #F6F8FC;
+    color: #011030;
+    border-radius: 14px;
+    padding: 12px;
+    line-height: 1.45;
+    font-weight: 600;
+    text-align: left;
+}
+
+#language-toggle {
+    min-width: 110px;
+}
+
+/* Dark mode support for the new modal */
+body.dark-mode .move-detail-modal-content,
+body.dark-mode .move-effect-text {
+    background: #102042;
+    color: #F6F8FC;
+}
+
+body.dark-mode .move-detail-modal-header button {
+    background: #1D315C;
+    color: #F6F8FC;
+}
+
+body.dark-mode .move-row-clickable:hover {
+    background: #1D315C;
+}
+
+body.dark-mode .move-detail-modal {
+    background: rgba(0, 0, 0, 0.72);
+}
+
+@media(max-width: 700px) {
+    .move-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .move-detail-modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .move-detail-modal-content {
+        width: 100%;
+        max-height: 78vh;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
