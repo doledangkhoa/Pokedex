@@ -48,7 +48,7 @@ function renderPokemonListItem(index) {
             <button class="pokemon-card-favorite ${favoriteClass}" onclick="event.stopPropagation(); toggleFavorite(${pokemonId});">♥</button>
             <button class="compare-card-button" onclick="event.stopPropagation(); addPokemonToCompare(${pokemonId});">Compare</button>
             <button class="team-card-button" onclick="event.stopPropagation(); addPokemonToTeam(${pokemonId});">+ Team</button>
-            <img class="search-pokemon-image" src="${pokemonImage}" onerror="this.src='${getPokemonFallbackImage(pokemonId)}'">
+            <img class="search-pokemon-image" src="${pokemonImage}" onerror="handlePokemonImageError(this, ${pokemonId})">
             <span class="bold font-size-12"># ${displayId}</span>
             <h3>${dressUpPayloadValue(pokemon.name)}</h3>
             ${getTypeContainers(pokemonTypes)}
@@ -80,6 +80,62 @@ function getPokemonListImage(pokemon, pokemonId) {
 
 function getPokemonFallbackImage(pokemonId) {
     return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png';
+}
+
+const pokemonImageRequests = new Map();
+const pokemonImageStates = new WeakMap();
+
+function getPokemonImageCandidates(pokemon) {
+    const sprites = pokemon.sprites;
+    const speciesId = pokemon.species?.url?.split('/').filter(Boolean).pop();
+    return [...new Set([
+        pokemon.image,
+        sprites?.versions?.['generation-v']?.['black-white']?.animated?.front_default,
+        sprites?.front_default,
+        sprites?.other?.['official-artwork']?.front_default,
+        sprites?.other?.home?.front_default,
+        getPokemonFallbackImage(pokemon.id),
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + pokemon.id + '.png',
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/' + pokemon.id + '.png',
+        speciesId ? getPokemonFallbackImage(speciesId) : null,
+        'src/no-pokemon-selected-image.png'
+    ].filter(Boolean))];
+}
+
+function setPokemonImage(image, pokemon) {
+    const candidates = getPokemonImageCandidates(pokemon);
+    pokemonImageStates.set(image, { candidates, attempted: new Set(), loadedDetails: true });
+    image.onerror = () => handlePokemonImageError(image, pokemon.id);
+    image.src = candidates[0];
+}
+
+async function handlePokemonImageError(image, pokemonId) {
+    let state = pokemonImageStates.get(image);
+    if (!state) {
+        state = { candidates: [], attempted: new Set(), loadedDetails: false };
+        pokemonImageStates.set(image, state);
+    }
+    state.attempted.add(image.src);
+    if (!state.loadedDetails) {
+        state.loadedDetails = true;
+        if (!pokemonImageRequests.has(pokemonId)) {
+            pokemonImageRequests.set(pokemonId, fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonId)
+                .then(response => response.ok ? response.json() : null)
+                .catch(() => null));
+        }
+        const pokemon = await pokemonImageRequests.get(pokemonId);
+        if (pokemonImageStates.get(image) !== state) return;
+        state.candidates = getPokemonImageCandidates(pokemon || { id: pokemonId });
+    }
+    while (state.candidates.length) {
+        const candidate = state.candidates.shift();
+        const absoluteUrl = new URL(candidate, document.baseURI).href;
+        if (state.attempted.has(absoluteUrl)) continue;
+        state.attempted.add(absoluteUrl);
+        image.src = candidate;
+        return;
+    }
+    image.onerror = null;
 }
 
 function normalizePokemonTypes(types) {

@@ -74,40 +74,12 @@ async function fetchPokemonInfo(id) {
 }
 
 function updateCurrentPokemonImage(pokemon) {
-    const currentPokemonImage = document.getElementById('current-pokemon-image');
-    const img = new Image();
-
-    const animatedSprite = pokemon.sprites?.versions?.['generation-v']?.['black-white']?.animated?.front_default;
-    const normalSprite = pokemon.sprites?.front_default;
-    const officialArtwork = pokemon.sprites?.other?.['official-artwork']?.front_default;
-    const homeArtwork = pokemon.sprites?.other?.home?.front_default;
-
-    const imageList = [animatedSprite, normalSprite, officialArtwork, homeArtwork].filter(Boolean);
-    let imageIndex = 0;
-
-    if (imageList.length === 0) {
-        currentPokemonImage.src = '';
-        currentPokemonImage.style.height = '0px';
-        return;
-    }
-
-    img.onload = function () {
-        currentPokemonImage.src = this.src;
-        currentPokemonImage.style.height = this.height < 100 ? this.height * 3 + 'px' : '180px';
+    const image = document.getElementById('current-pokemon-image');
+    image.onload = function () {
+        this.style.height = this.naturalHeight < 100 ? this.naturalHeight * 3 + 'px' : '180px';
     };
-
-    img.onerror = function () {
-        imageIndex++;
-
-        if (imageIndex < imageList.length) {
-            img.src = imageList[imageIndex];
-        } else {
-            currentPokemonImage.src = '';
-            currentPokemonImage.style.height = '0px';
-        }
-    };
-
-    img.src = imageList[imageIndex];
+    image.style.height = '180px';
+    setPokemonImage(image, pokemon);
 }
 
 function setupPokemonAbout(pokemon, species) {
@@ -680,17 +652,13 @@ function getCompareSlotHtml(slotData, label) {
     const image = getPokemonCompareImage(pokemon);
     const displayId = getDisplayPokemonIdFromInfo(pokemon, species);
 
-    return `<img src="${image}" alt="${pokemon.name}">
+    return `<img src="${image}" alt="${pokemon.name}" onerror="handlePokemonImageError(this, ${pokemon.id})">
         <h4>#${displayId} ${dressUpPayloadValue(pokemon.name)}</h4>
         <div>${getTypeContainers(pokemon.types.map(t => t.type.name))}</div>`;
 }
 
 function getPokemonCompareImage(pokemon) {
-    return pokemon.sprites?.versions?.['generation-v']?.['black-white']?.animated?.front_default ||
-        pokemon.sprites?.front_default ||
-        pokemon.sprites?.other?.['official-artwork']?.front_default ||
-        pokemon.sprites?.other?.home?.front_default ||
-        '';
+    return getPokemonImageCandidates(pokemon)[0];
 }
 
 function getCompareTableHtml(leftPokemon, rightPokemon) {
