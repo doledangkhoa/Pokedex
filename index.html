@@ -72,14 +72,10 @@
 
         <div id="phase2-toolbar" class="container phase2-toolbar">
             <button onclick="toggleDarkMode()" id="dark-mode-toggle">🌙 Dark Mode</button>
-            <button onclick="toggleLanguage()" id="language-toggle">🇯🇵 日本語</button>
             <button onclick="openTeamPanel()">Team Builder</button>
-            <button onclick="openProgressPanel()">Progress</button>
-            <button onclick="openBattlePanel()">Battle Lite</button>
             <button onclick="openRandomPokemon()">🎲 Random</button>
         </div>
 
-        <div id="progress-summary" class="progress-summary"></div>
         <div id="result-counter" class="result-counter"></div>
 
         <div id="pokedex-list-render-container">
@@ -214,29 +210,6 @@
             <button onclick="clearTeam()">Clear Team</button>
         </div>
     </div>
-
-    <div id="progress-panel" class="compare-panel progress-panel hide">
-        <div class="compare-header">
-            <h3>Pokédex Progress</h3>
-            <button onclick="closeProgressPanel()">×</button>
-        </div>
-        <div id="progress-panel-content"></div>
-    </div>
-
-    <div id="battle-panel" class="compare-panel battle-panel hide">
-        <div class="compare-header">
-            <h3>Battle Simulator Lite</h3>
-            <button onclick="closeBattlePanel()">×</button>
-        </div>
-        <div class="battle-picker">
-            <select id="battle-left-select"></select>
-            <span>VS</span>
-            <select id="battle-right-select"></select>
-        </div>
-        <button class="battle-run-button" onclick="runBattleLite()">Predict Battle</button>
-        <div id="battle-result" class="battle-result"></div>
-    </div>
-
 
     <div id="move-detail-modal" class="move-detail-modal hide" onclick="closeMoveDetailModal()">
         <div class="move-detail-modal-content" onclick="event.stopPropagation()">

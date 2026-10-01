@@ -792,11 +792,10 @@ input {
 }
 
 
-/* Phase 2 additions: team builder, dark mode, progress, battle, quick navigation */
+/* Phase 2 additions: team builder, dark mode, quick navigation */
 .phase2-toolbar { display: flex; gap: 10px; margin: 0 10px 14px 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
-.phase2-toolbar button, .panel-actions button, .battle-run-button { border: none; background: #F6F8FC; color: #011030; border-radius: 18px; padding: 9px 12px; font-weight: 800; cursor: pointer; transition: 0.15s ease-in-out; }
-.phase2-toolbar button:hover, .panel-actions button:hover, .battle-run-button:hover { background: #FF5350; color: white; }
-.progress-summary { color: white; font-weight: 700; text-align: center; opacity: 0.95; margin-bottom: 8px; }
+.phase2-toolbar button, .panel-actions button { border: none; background: #F6F8FC; color: #011030; border-radius: 18px; padding: 9px 12px; font-weight: 800; cursor: pointer; transition: 0.15s ease-in-out; }
+.phase2-toolbar button:hover, .panel-actions button:hover { background: #FF5350; color: white; }
 .team-card-button { position: absolute; top: 78px; right: 8px; font-size: 11px; z-index: 2; padding: 5px 8px; border: none; background: #F6F8FC; color: #011030; border-radius: 18px; font-weight: 700; cursor: pointer; transition: 0.15s ease-in-out; }
 .team-card-button:hover { background: #FF5350; color: white; }
 .team-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
@@ -805,22 +804,18 @@ input {
 .team-slot img { height: 64px; object-fit: contain; image-rendering: pixelated; }
 .team-slot h4 { font-size: 13px; }
 .remove-team-button { position: absolute; top: 6px; right: 6px; border: none; background: white; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: 900; }
-.team-analysis-grid, .progress-grid, .battle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.analysis-box, .progress-box, .battle-box { background: #F6F8FC; border-radius: 16px; padding: 12px; text-align: center; }
-.analysis-box h4, .progress-box h4, .battle-box h4 { margin-top: 0; }
+.team-analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.analysis-box { background: #F6F8FC; border-radius: 16px; padding: 12px; text-align: center; }
+.analysis-box h4 { margin-top: 0; }
 .team-score { font-size: 24px; font-weight: 900; color: #FF5350; }
-.battle-picker { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin: 12px 0; }
-.battle-picker select { border: none; background: #F6F8FC; border-radius: 14px; padding: 10px; min-width: 0; }
-.battle-run-button { width: 100%; margin-bottom: 10px; }
-.battle-winner { color: #FF5350; font-weight: 900; font-size: 20px; }
 body.dark-mode { background-color: #07111f; color: #e8edf8; }
 body.dark-mode .container, body.dark-mode .compare-panel { background: #101d31; box-shadow: rgba(0,0,0,0.35) 0 10px 22px; }
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode .detail-value, body.dark-mode .move-name, body.dark-mode .phase2-toolbar button, body.dark-mode .mini-action-button, body.dark-mode .compare-card-button, body.dark-mode .team-card-button, body.dark-mode .compare-header button, body.dark-mode .panel-actions button, body.dark-mode .battle-run-button { color: #e8edf8; }
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode .detail-value, body.dark-mode .move-name, body.dark-mode .phase2-toolbar button, body.dark-mode .mini-action-button, body.dark-mode .compare-card-button, body.dark-mode .team-card-button, body.dark-mode .compare-header button, body.dark-mode .panel-actions button { color: #e8edf8; }
 body.dark-mode span, body.dark-mode .move-meta, body.dark-mode .detail-label { color: #aeb8c8; }
-body.dark-mode input, body.dark-mode select, body.dark-mode .filter-bar select, body.dark-mode .pokemon-info-variable-container, body.dark-mode .current-pokemon-stats-container, body.dark-mode .detail-item, body.dark-mode .move-row, body.dark-mode .compare-slot, body.dark-mode .team-slot, body.dark-mode .analysis-box, body.dark-mode .progress-box, body.dark-mode .battle-box, body.dark-mode .phase2-toolbar button, body.dark-mode .mini-action-button, body.dark-mode .compare-card-button, body.dark-mode .team-card-button, body.dark-mode .panel-actions button, body.dark-mode .battle-run-button { background: #182945; color: #e8edf8; }
+body.dark-mode input, body.dark-mode select, body.dark-mode .filter-bar select, body.dark-mode .pokemon-info-variable-container, body.dark-mode .current-pokemon-stats-container, body.dark-mode .detail-item, body.dark-mode .move-row, body.dark-mode .compare-slot, body.dark-mode .team-slot, body.dark-mode .analysis-box, body.dark-mode .phase2-toolbar button, body.dark-mode .mini-action-button, body.dark-mode .compare-card-button, body.dark-mode .team-card-button, body.dark-mode .panel-actions button { background: #182945; color: #e8edf8; }
 body.dark-mode .pokemon-render-result-container { border-color: #101d31; }
 body.dark-mode .pokemon-render-result-container:hover { border-color: #30425f; box-shadow: rgba(0,0,0,0.35) 0 18px 20px; }
-@media(max-width: 700px) { .team-slots, .team-analysis-grid, .progress-grid, .battle-grid, .battle-picker { grid-template-columns: 1fr; } }
+@media(max-width: 700px) { .team-slots, .team-analysis-grid { grid-template-columns: 1fr; } }
 
 
 /* Phase 3 additions: move detail + competitive build */
@@ -940,7 +935,7 @@ body.dark-mode .move-row-clickable:hover {
 }
 
 
-/* Phase 3.5 additions: move detail modal + language button */
+/* Phase 3.5 additions: move detail modal */
 .move-detail-modal {
     position: fixed;
     inset: 0;
@@ -1022,10 +1017,6 @@ body.dark-mode .move-row-clickable:hover {
     line-height: 1.45;
     font-weight: 600;
     text-align: left;
-}
-
-#language-toggle {
-    min-width: 110px;
 }
 
 /* Dark mode support for the new modal */

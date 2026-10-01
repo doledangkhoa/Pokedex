@@ -183,7 +183,7 @@ function updateResultCounter() {
     const counter = document.getElementById('result-counter');
     if (!counter) return;
 
-    counter.innerHTML = isJapaneseLanguage() ? `${currentList.length} 件のポケモン` : `${currentList.length} Pokemon found`;
+    counter.innerHTML = `${currentList.length} Pokemon found`;
 }
 
 function getFavoritePokemonIds() {
@@ -277,58 +277,6 @@ function dressUpPayloadValue(string) {
     return splitStr.join(' ');
 }
 
-
-function getSeenPokemonIds() {
-    try { return JSON.parse(localStorage.getItem('seenPokemonIds')) || []; } catch (error) { return []; }
-}
-
-function setSeenPokemonIds(ids) {
-    localStorage.setItem('seenPokemonIds', JSON.stringify([...new Set(ids.map(Number))]));
-}
-
-function markPokemonAsSeen(id) {
-    const numericId = Number(id);
-    const seenIds = getSeenPokemonIds();
-    if (!seenIds.includes(numericId)) {
-        seenIds.push(numericId);
-        setSeenPokemonIds(seenIds);
-    }
-    updateProgressSummary();
-}
-
-function updateProgressSummary() {
-    const summary = document.getElementById('progress-summary');
-    if (!summary || !Array.isArray(pokemons)) return;
-    const seenCount = getSeenPokemonIds().length;
-    const favoriteCount = getFavoritePokemonIds().length;
-    const teamCount = typeof getTeamPokemonIds === 'function' ? getTeamPokemonIds().length : 0;
-    const totalCount = pokemons.length || 1300;
-    const completion = Math.min(100, Math.round((seenCount / totalCount) * 100));
-    summary.innerHTML = `Seen ${seenCount}/${totalCount} · Favorites ${favoriteCount} · Team ${teamCount}/6 · ${completion}% complete`;
-}
-
-function openProgressPanel() {
-    const panel = document.getElementById('progress-panel');
-    const content = document.getElementById('progress-panel-content');
-    if (!panel || !content) return;
-    const seenCount = getSeenPokemonIds().length;
-    const favoriteCount = getFavoritePokemonIds().length;
-    const teamCount = typeof getTeamPokemonIds === 'function' ? getTeamPokemonIds().length : 0;
-    const formCount = getSeenPokemonIds().filter(id => Number(id) > 10000).length;
-    const totalCount = pokemons.length || 1300;
-    const completion = Math.min(100, Math.round((seenCount / totalCount) * 100));
-    content.innerHTML = `<div class="progress-grid">
-        <div class="progress-box"><h4>Seen</h4><div class="team-score">${seenCount}</div></div>
-        <div class="progress-box"><h4>Favorites</h4><div class="team-score">${favoriteCount}</div></div>
-        <div class="progress-box"><h4>Team</h4><div class="team-score">${teamCount}/6</div></div>
-        <div class="progress-box"><h4>Forms Seen</h4><div class="team-score">${formCount}</div></div>
-        <div class="progress-box"><h4>Completion</h4><div class="team-score">${completion}%</div></div>
-        <div class="progress-box"><h4>Total Loaded</h4><div class="team-score">${totalCount}</div></div>
-    </div>`;
-    panel.classList.remove('hide');
-}
-
-function closeProgressPanel() { document.getElementById('progress-panel')?.classList.add('hide'); }
 
 function openRandomPokemon() {
     if (!pokemons.length) return;

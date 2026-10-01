@@ -35,7 +35,6 @@ async function fetchPokemonInfo(id) {
         const species = await responseSpecies.json();
 
         currentSelectedPokemonData = { pokemon, species };
-        markPokemonAsSeen(pokemon.id);
 
         setupPokemonAbout(pokemon, species);
         setupPokemonStats(pokemon);
@@ -222,15 +221,6 @@ async function setupPokemonAbilities(pokemon) {
         container.classList.remove('hide');
         container.innerHTML = dressUpPayloadValue(abilityData.ability.name);
 
-        if (isJapaneseLanguage()) {
-            try {
-                const response = await fetch(abilityData.ability.url);
-                const ability = await response.json();
-                container.innerHTML = getLocalizedNameFromList(ability.names, dressUpPayloadValue(abilityData.ability.name));
-            } catch (error) {
-                console.error(error);
-            }
-        }
     }
 }
 
@@ -814,7 +804,6 @@ function getTeamPokemonIds() {
 
 function setTeamPokemonIds(ids) {
     localStorage.setItem('teamPokemonIds', JSON.stringify([...new Set(ids.map(Number))].slice(0, 6)));
-    updateProgressSummary();
 }
 
 function addCurrentPokemonToTeam() { if (currentSelectedPokemonId) addPokemonToTeam(currentSelectedPokemonId); }
@@ -927,54 +916,4 @@ function getTeamAdvice(team, weakTypes) {
     if (weakTypes.length >= 5) return 'Team has many shared weaknesses. Add different types.';
     if (weakTypes.length <= 2) return 'Good defensive balance.';
     return 'Solid team. Watch the highest weakness type.';
-}
-
-function openBattlePanel() {
-    const panel = document.getElementById('battle-panel');
-    if (!panel) return;
-    populateBattleSelects();
-    panel.classList.remove('hide');
-}
-
-function closeBattlePanel() { document.getElementById('battle-panel')?.classList.add('hide'); }
-
-function populateBattleSelects() {
-    const left = document.getElementById('battle-left-select');
-    const right = document.getElementById('battle-right-select');
-    if (!left || !right) return;
-    const options = pokemons.map(pokemon => `<option value="${getPokemonRealId(pokemon)}">#${getDisplayPokemonId(pokemon)} ${dressUpPayloadValue(pokemon.name)}</option>`).join('');
-    left.innerHTML = options; right.innerHTML = options;
-    if (currentSelectedPokemonId) left.value = currentSelectedPokemonId;
-    const nextPokemon = currentList.find(p => Number(getPokemonRealId(p)) !== Number(left.value)) || pokemons[0];
-    if (nextPokemon) right.value = getPokemonRealId(nextPokemon);
-}
-
-async function runBattleLite() {
-    const leftId = document.getElementById('battle-left-select')?.value;
-    const rightId = document.getElementById('battle-right-select')?.value;
-    const result = document.getElementById('battle-result');
-    if (!leftId || !rightId || !result) return;
-    result.innerHTML = '<span>Calculating...</span>';
-    const [leftPokemon, rightPokemon] = await Promise.all([fetchPokemonOnly(leftId), fetchPokemonOnly(rightId)]);
-    if (!leftPokemon || !rightPokemon) { result.innerHTML = '<span>Could not load battle data.</span>'; return; }
-    const leftScore = await calculateBattleScore(leftPokemon, rightPokemon);
-    const rightScore = await calculateBattleScore(rightPokemon, leftPokemon);
-    const total = leftScore + rightScore || 1;
-    const leftChance = Math.round((leftScore / total) * 100);
-    const rightChance = 100 - leftChance;
-    const winner = leftChance >= rightChance ? leftPokemon : rightPokemon;
-    result.innerHTML = `<div class="battle-grid">
-        <div class="battle-box"><h4>${dressUpPayloadValue(leftPokemon.name)}</h4><div class="team-score">${leftChance}%</div></div>
-        <div class="battle-box"><h4>${dressUpPayloadValue(rightPokemon.name)}</h4><div class="team-score">${rightChance}%</div></div>
-        <div class="battle-box"><h4>Predicted Winner</h4><div class="battle-winner">${dressUpPayloadValue(winner.name)}</div></div>
-        <div class="battle-box"><h4>Note</h4><span>Lite prediction uses stats, speed and type advantage. It is not a full battle engine.</span></div>
-    </div>`;
-}
-
-async function calculateBattleScore(attacker, defender) {
-    const statsTotal = ['hp','attack','defense','special-attack','special-defense','speed'].reduce((sum, stat) => sum + getPokemonStat(attacker, stat), 0);
-    const speedBonus = getPokemonStat(attacker, 'speed') * 0.35;
-    const defenderWeakness = await getPokemonWeaknessMultipliers(defender);
-    const typeMultiplier = Math.max(...attacker.types.map(typeItem => defenderWeakness[typeItem.type.name] || 1));
-    return statsTotal + speedBonus + typeMultiplier * 80;
 }
