@@ -48,7 +48,7 @@ function renderPokemonListItem(index) {
             <button class="pokemon-card-favorite ${favoriteClass}" onclick="event.stopPropagation(); toggleFavorite(${pokemonId});">♥</button>
             <button class="compare-card-button" onclick="event.stopPropagation(); addPokemonToCompare(${pokemonId});">Compare</button>
             <button class="team-card-button" onclick="event.stopPropagation(); addPokemonToTeam(${pokemonId});">+ Team</button>
-            <img class="search-pokemon-image" src="${pokemonImage}" onerror="handlePokemonImageError(this, ${pokemonId})">
+            <img data-pokemon-id="${pokemonId}" class="search-pokemon-image" src="${pokemonImage}" onerror="handlePokemonImageError(this, ${pokemonId})">
             <span class="bold font-size-12"># ${displayId}</span>
             <h3>${dressUpPayloadValue(pokemon.name)}</h3>
             ${getTypeContainers(pokemonTypes)}
@@ -78,14 +78,27 @@ function getPokemonListImage(pokemon, pokemonId) {
     return getPokemonFallbackImage(pokemonId);
 }
 
-function getPokemonFallbackImage(pokemonId) {
-    return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png';
+function getPokemonFallbackImage(pokemonId, shiny = false) {
+    return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + (shiny ? 'shiny/' : '') + pokemonId + '.png';
 }
 
 const pokemonImageRequests = new Map();
 const pokemonImageStates = new WeakMap();
 
-function getPokemonImageCandidates(pokemon) {
+function getPokemonImageCandidates(pokemon, shiny = false) {
+    if (shiny) {
+        const sprites = pokemon.sprites;
+        return [...new Set([
+            sprites?.versions?.['generation-v']?.['black-white']?.animated?.front_shiny,
+            sprites?.front_shiny,
+            sprites?.other?.['official-artwork']?.front_shiny,
+            sprites?.other?.home?.front_shiny,
+            getPokemonFallbackImage(pokemon.id, true),
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/' + pokemon.id + '.png',
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/' + pokemon.id + '.png',
+            ...getPokemonImageCandidates(pokemon, false)
+        ].filter(Boolean))];
+    }
     const sprites = pokemon.sprites;
     const speciesId = pokemon.species?.url?.split('/').filter(Boolean).pop();
     return [...new Set([
@@ -102,9 +115,9 @@ function getPokemonImageCandidates(pokemon) {
     ].filter(Boolean))];
 }
 
-function setPokemonImage(image, pokemon) {
-    const candidates = getPokemonImageCandidates(pokemon);
-    pokemonImageStates.set(image, { candidates, attempted: new Set(), loadedDetails: true });
+function setPokemonImage(image, pokemon, shiny = false) {
+    const candidates = getPokemonImageCandidates(pokemon, shiny);
+    pokemonImageStates.set(image, { candidates, attempted: new Set(), loadedDetails: true, shiny });
     image.onerror = () => handlePokemonImageError(image, pokemon.id);
     image.src = candidates[0];
 }
@@ -112,7 +125,7 @@ function setPokemonImage(image, pokemon) {
 async function handlePokemonImageError(image, pokemonId) {
     let state = pokemonImageStates.get(image);
     if (!state) {
-        state = { candidates: [], attempted: new Set(), loadedDetails: false };
+        state = { candidates: [], attempted: new Set(), loadedDetails: false, shiny: false };
         pokemonImageStates.set(image, state);
     }
     state.attempted.add(image.src);
@@ -125,7 +138,7 @@ async function handlePokemonImageError(image, pokemonId) {
         }
         const pokemon = await pokemonImageRequests.get(pokemonId);
         if (pokemonImageStates.get(image) !== state) return;
-        state.candidates = getPokemonImageCandidates(pokemon || { id: pokemonId });
+        state.candidates = getPokemonImageCandidates(pokemon || { id: pokemonId }, state.shiny);
     }
     while (state.candidates.length) {
         const candidate = state.candidates.shift();

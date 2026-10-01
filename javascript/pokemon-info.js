@@ -1,11 +1,29 @@
 let currentSelectedPokemonData = null;
+let currentPokemonShiny = false;
+
+function updateShinyButton() {
+    const button = document.getElementById('shiny-toggle');
+    if (!button) return;
+    button.textContent = currentPokemonShiny ? '✨ Shiny: On' : '✨ Shiny: Off';
+    button.setAttribute('aria-pressed', String(currentPokemonShiny));
+    button.disabled = !currentSelectedPokemonData || Number(currentSelectedPokemonData.pokemon.id) !== currentSelectedPokemonId;
+}
+
+function toggleCurrentPokemonShiny() {
+    if (!currentSelectedPokemonData || Number(currentSelectedPokemonData.pokemon.id) !== currentSelectedPokemonId) return;
+    currentPokemonShiny = !currentPokemonShiny;
+    updateCurrentPokemonImage(currentSelectedPokemonData.pokemon);
+}
+
 let compareSlots = {
     left: null,
     right: null
 };
 
 function openInfo(id) {
+    if (currentSelectedPokemonId !== Number(id)) currentPokemonShiny = false;
     currentSelectedPokemonId = Number(id);
+    updateShinyButton();
     document.getElementById('current-pokemon-empty').classList.add('hide');
     document.getElementById('current-pokemon-loading').classList.remove('hide');
     showPokemonTab('about');
@@ -79,7 +97,8 @@ function updateCurrentPokemonImage(pokemon) {
         this.style.height = this.naturalHeight < 100 ? this.naturalHeight * 3 + 'px' : '180px';
     };
     image.style.height = '180px';
-    setPokemonImage(image, pokemon);
+    setPokemonImage(image, pokemon, currentPokemonShiny);
+    updateShinyButton();
 }
 
 function setupPokemonAbout(pokemon, species) {
@@ -539,7 +558,10 @@ function setupEvolutionChain(evolutionChain) {
     for (let i = 0; i < evolutionList.length && i < 3; i++) {
         const pokemonId = filterIdFromSpeciesURL(evolutionList[i].url);
 
-        chainImages[i].src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemonId + '.png';
+        chainImages[i].setAttribute('data-pokemon-id', pokemonId);
+        chainImages[i].onerror = () => handlePokemonImageError(chainImages[i], pokemonId);
+        pokemonImageStates.delete(chainImages[i]);
+        chainImages[i].src = getPokemonFallbackImage(pokemonId);
         chainImages[i].setAttribute('onclick', 'openInfo(' + pokemonId + ')');
         chainImages[i].classList.remove('hide');
 
@@ -652,7 +674,7 @@ function getCompareSlotHtml(slotData, label) {
     const image = getPokemonCompareImage(pokemon);
     const displayId = getDisplayPokemonIdFromInfo(pokemon, species);
 
-    return `<img src="${image}" alt="${pokemon.name}" onerror="handlePokemonImageError(this, ${pokemon.id})">
+    return `<img data-pokemon-id="${pokemon.id}" src="${image}" alt="${pokemon.name}" onerror="handlePokemonImageError(this, ${pokemon.id})">
         <h4>#${displayId} ${dressUpPayloadValue(pokemon.name)}</h4>
         <div>${getTypeContainers(pokemon.types.map(t => t.type.name))}</div>`;
 }
@@ -815,7 +837,7 @@ async function renderTeamPanel() {
         if (!pokemon) slotHtml.push(`<div class="team-slot empty">Slot ${i + 1}</div>`);
         else slotHtml.push(`<div class="team-slot">
             <button class="remove-team-button" onclick="removePokemonFromTeam(${pokemon.id})">×</button>
-            <img src="${getPokemonCompareImage(pokemon)}" alt="${pokemon.name}">
+            <img data-pokemon-id="${pokemon.id}" src="${getPokemonCompareImage(pokemon)}" alt="${pokemon.name}">
             <h4>#${getDisplayPokemonIdFromTeamPokemon(pokemon)} ${dressUpPayloadValue(pokemon.name)}</h4>
             ${getTypeContainers(pokemon.types.map(t => t.type.name))}
         </div>`);
